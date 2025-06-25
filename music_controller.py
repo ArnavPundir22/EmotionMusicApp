@@ -1,36 +1,89 @@
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+# music_controller.py
+import os
+import random
+from pygame import mixer
 
-# Spotify Authentication Setup
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-    client_id="64ef1f4d49054b3f9ddfd0d687b65826",
-    client_secret="79641bb1ed7e4692aeda5a7bc21d7403",
-    redirect_uri="http://localhost:8888/callback",
-    scope="user-modify-playback-state user-read-playback-state"
-))
+mixer.init()
 
-# Map emotions to mood keywords for Spotify search
-emotion_to_query = {
-    'happy': 'feel good',
-    'sad': 'sad chill',
-    'angry': 'rage workout',
-    'fear': 'ambient focus',
-    'surprise': 'indie vibes',
-    'neutral': 'chill hits',
-    'disgust': 'deep calm'
+BASE_MUSIC_DIR = os.path.join(os.getcwd(), "music")
+
+emotion_to_folder = {
+    'happy': 'happy',
+    'sad': 'sad',
+    'angry': 'angry',
+    'fear': 'fear',
+    'surprise': 'surprise',
+    'neutral': 'neutral',
+    'disgust': 'disgust'
 }
 
+current_playlist = []
+current_index = -1
+is_paused = False
+
+def load_playlist(emotion):
+    global current_playlist, current_index
+    folder = emotion_to_folder.get(emotion.lower(), 'neutral')
+    path = os.path.join(BASE_MUSIC_DIR, folder)
+
+    if not os.path.exists(path):
+        print(f"[Music] Folder not found: {path}")
+        current_playlist = []
+        return
+
+    songs = [os.path.join(path, file) for file in os.listdir(path)
+             if file.lower().endswith(('.mp3', '.wav', '.ogg','.mpeg'))]
+
+    random.shuffle(songs)
+    current_playlist = songs
+    current_index = 0
+
+def play_current_song():
+    if current_playlist and 0 <= current_index < len(current_playlist):
+        try:
+            mixer.music.load(current_playlist[current_index])
+            mixer.music.play()
+            print(f"[Music] Playing: {os.path.basename(current_playlist[current_index])}")
+        except Exception as e:
+            print(f"[Music Error]: {e}")
+
+def get_current_playlist_names():
+    return [os.path.basename(path) for path in current_playlist]
+
+def play_song_by_index(index):
+    global current_index
+    if 0 <= index < len(current_playlist):
+        current_index = index
+        play_current_song()
+
+
 def play_music_for_emotion(emotion):
-    try:
-        query = emotion_to_query.get(emotion.lower(), 'chill vibes')
-        results = sp.search(q=query, type='playlist', limit=1)
+    load_playlist(emotion)
+    play_current_song()
 
-        if results['playlists']['items']:
-            playlist_uri = results['playlists']['items'][0]['uri']
-            sp.start_playback(context_uri=playlist_uri)
-            print(f"[Spotify] Playing playlist for '{emotion}' mood.")
-        else:
-            print(f"[Spotify] No playlist found for '{emotion}'.")
+def pause_music():
+    global is_paused
+    if mixer.music.get_busy():
+        mixer.music.pause()
+        is_paused = True
 
-    except Exception as e:
-        print(f"[Spotify Error]: {e}")
+def resume_music():
+    global is_paused
+    if is_paused:
+        mixer.music.unpause()
+        is_paused = False
+
+def stop_music():
+    mixer.music.stop()
+
+def next_song():
+    global current_index
+    if current_playlist:
+        current_index = (current_index + 1) % len(current_playlist)
+        play_current_song()
+
+def previous_song():
+    global current_index
+    if current_playlist:
+        current_index = (current_index - 1) % len(current_playlist)
+        play_current_song()
