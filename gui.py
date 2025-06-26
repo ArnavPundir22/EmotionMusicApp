@@ -15,17 +15,17 @@ os.environ["QT_QPA_PLATFORM"] = "wayland"  # Optional for Linux/Wayland
 
 class EmotionMusicGUI(QWidget):
     emoji_map = {
-        "happy": "😄",
-        "sad": "😢",
-        "angry": "😠",
-        "surprise": "😲",
+        "happy": "🥳",
+        "sad": "☹️",
+        "angry": "🤬",
+        "surprise": "😮",
         "fear": "😱",
-        "neutral": "😐",
+        "neutral": "😒",
         "disgust": "🤫"
     }
 
     last_detection_time = 0
-    detection_interval = 10  # seconds
+    detection_interval = 1 # seconds
 
     def __init__(self):
         super().__init__()
