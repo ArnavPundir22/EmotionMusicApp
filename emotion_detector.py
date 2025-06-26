@@ -1,5 +1,3 @@
-# emotion_detector.py
-import cv2
 from deepface import DeepFace
 
 def detect_emotion(frame):
