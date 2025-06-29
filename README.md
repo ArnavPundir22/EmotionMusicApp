@@ -42,7 +42,7 @@ Each folder should contain `.mp3` or `.wav` files appropriate for that emotion.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/EmotionMusicApp.git
+   git clone https://github.com/ArnavPundir22/EmotionMusicApp.git
    cd EmotionMusicApp
    ```
 
