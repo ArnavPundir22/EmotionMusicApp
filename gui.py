@@ -27,6 +27,7 @@ class EmotionMusicGUI(QWidget):
     last_detection_time = 0
     detection_interval = 1 # seconds
 
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Emotion Music Recommender")
