@@ -2,16 +2,20 @@ import sys
 import time
 import cv2
 import os
+import shutil
 from PyQt5.QtWidgets import (
     QApplication, QLabel, QVBoxLayout, QWidget,
-    QPushButton, QHBoxLayout, QListWidget, QCheckBox
+    QPushButton, QHBoxLayout, QListWidget, QCheckBox,
+    QFileDialog, QInputDialog
 )
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QImage, QPixmap
 from emotion_detector import detect_emotion
 import music_controller as mc
 
+
 os.environ["QT_QPA_PLATFORM"] = "wayland"  # Optional for Linux/Wayland
+
 
 class EmotionMusicGUI(QWidget):
     emoji_map = {
@@ -25,13 +29,37 @@ class EmotionMusicGUI(QWidget):
     }
 
     last_detection_time = 0
-    detection_interval = 1 # seconds
-
+    detection_interval = 10  # seconds
 
     def __init__(self):
         super().__init__()
+        # Set Dark Theme
+        self.setStyleSheet("""
+            QWidget {
+                background-color: black;
+                color: white;
+                font-size: 14px;
+            }
+            QLabel {
+                color: white;
+            }
+            QListWidget {
+                background-color: #222;
+                color: white;
+            }
+            QCheckBox, QPushButton {
+                background-color: #333;
+                color: white;
+                padding: 5px;
+                border-radius: 8px;
+            }
+            QPushButton:hover {
+                background-color: #555;
+            }
+        """)
+
         self.setWindowTitle("Emotion Music Recommender")
-        self.setGeometry(500, 100, 600, 650)
+        self.setGeometry(500, 100, 600, 700)
 
         self.image_label = QLabel()
         self.status_label = QLabel("")
@@ -45,6 +73,14 @@ class EmotionMusicGUI(QWidget):
         # Emotion Detection Toggle
         self.emotion_toggle = QCheckBox("Enable Emotion Detection")
         self.emotion_toggle.setChecked(True)
+
+        # Add Song Button
+        self.add_song_button = QPushButton("➕ Add Song to Category")
+        self.add_song_button.clicked.connect(self.add_song_to_category)
+
+        # Manual Emotion Select Button
+        self.manual_emotion_button = QPushButton("🎯 Select Emotion Manually")
+        self.manual_emotion_button.clicked.connect(self.select_emotion_manually)
 
         # Control Buttons
         self.play_pause_button = QPushButton("⏯️ Play/Pause")
@@ -66,6 +102,8 @@ class EmotionMusicGUI(QWidget):
         layout.addWidget(self.emotion_label)
         layout.addWidget(self.song_list)
         layout.addWidget(self.emotion_toggle)
+        layout.addWidget(self.manual_emotion_button)
+        layout.addWidget(self.add_song_button)
         layout.addLayout(control_layout)
         self.setLayout(layout)
 
@@ -127,10 +165,39 @@ class EmotionMusicGUI(QWidget):
         songs = mc.get_current_playlist_names()
         self.song_list.addItems(songs)
 
+    def add_song_to_category(self):
+        file_path, _ = QFileDialog.getOpenFileName(self, "Select a music file", "", "Audio Files (*.mp3 *.wav)")
+        if file_path:
+            emotions = list(self.emoji_map.keys())
+            emotion, ok = QInputDialog.getItem(self, "Select Emotion Category", "Emotion:", emotions, 0, False)
+            if ok and emotion:
+                dest_folder = os.path.join("songs", emotion)
+                os.makedirs(dest_folder, exist_ok=True)
+                try:
+                    shutil.copy(file_path, dest_folder)
+                    self.status_label.setText(f"✅ Song added to '{emotion}' category.")
+                    if emotion == self.last_emotion:
+                        self.load_song_list()
+                except Exception as e:
+                    self.status_label.setText(f"❌ Error adding song: {e}")
+
+    def select_emotion_manually(self):
+        emotions = list(self.emoji_map.keys())
+        emotion, ok = QInputDialog.getItem(self, "Select Your Emotion", "Emotion:", emotions, 0, False)
+        if ok and emotion:
+            self.last_emotion = emotion
+            self.emotion_label.setText(
+                f"Manually Selected Emotion: {emotion.capitalize()} {self.emoji_map.get(emotion, '')}"
+            )
+            mc.stop_music()
+            mc.play_music_for_emotion(emotion)
+            self.load_song_list()
+
     def closeEvent(self, event):
         self.cap.release()
         mc.stop_music()
         mc.mixer.quit()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
