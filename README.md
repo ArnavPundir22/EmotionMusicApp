@@ -1,84 +1,111 @@
-# EmotionMusicApp 🎵😊😢
 
-EmotionMusicApp is an AI-powered music player that detects your emotion in real-time using your webcam and plays songs that match your mood. Built using Python, PyQt5 for the GUI, and DeepFace for emotion recognition, the app creates a personalized music experience based on how you feel.
+# 🎵 Emotion Music Recommender - EmotionMusicApp
 
-## Features
+An AI-powered desktop application that **detects your emotion using webcam** or allows **manual emotion selection**, and plays music tailored to your mood.  
+You can also **add your favorite songs** to each emotion category.
 
-- 🎭 Emotion detection using DeepFace and webcam input  
-- 🎶 Automatic music playback based on detected emotion  
-- 🖥️ Intuitive PyQt5-based GUI with Play, Pause, Next, and Previous controls  
-- 📁 Supports organizing songs into folders by emotion (e.g., happy, sad, angry, etc.)
+---
 
-## Supported Emotions
+## 💡 Features
 
-- Happy  
-- Sad  
-- Angry  
-- Neutral  
-- Fear  
-- Surprise  
+- 🎭 Real-time emotion detection via webcam (DeepFace)
+- 👤 Manual emotion selection (bypass detection)
+- 📂 Add music to any emotion category
+- 🎧 Emotion-specific playlists (happy, sad, angry, etc.)
+- ⏯️ Media controls: Play, Pause, Next, Previous
+- 🖥️ PyQt5 GUI with dark mode
 
-## Folder Structure
+---
 
-To use EmotionMusicApp effectively, **copy your favorite songs into the respective emotion folders** inside the `songs/` directory.
 
-Example folder structure:
+## 🛠 Technologies Used
+
+- **Python**
+- **OpenCV** (webcam & image processing)
+- **DeepFace**  `emotion_detector.py` model
+- **PyQt5** (for GUI)
+- **Pygame** or **Mixer** for audio playback
+
+---
+
+## 📁 Folder Structure
+
 ```
 EmotionMusicApp/
 │
+├── emotion_detector.py      # Handles emotion prediction from webcam frame
+├── music_controller.py      # Handles audio controls per emotion
+├── EmotionMusicGUI.py       # Main GUI application                
 ├── songs/
 │   ├── happy/
 │   ├── sad/
 │   ├── angry/
-│   ├── neutral/
-│   ├── fear/
 │   ├── surprise/
-│   
+│   ├── fear/
+│   ├── neutral/
+└── README.md
 ```
-
-Each folder should contain `.mp3` or `.wav` files appropriate for that emotion.
-
-## Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/ArnavPundir22/EmotionMusicApp.git
-   cd EmotionMusicApp
-   ```
-
-2. **Install the dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Run the application:**
-   ```bash
-   python gui.py
-   ```
-
-## Requirements
-
-- Python 3.8+
-- OpenCV
-- DeepFace
-- PyQt5
-- Pygame (for audio playback)
-
-You can install them manually if `requirements.txt` is not provided:
-```bash
-pip install opencv-python deepface PyQt5 pygame
-```
-
-## Notes
-
-- Make sure your system has a webcam.
-- The app may take a few seconds to detect the emotion.
-- All music must be placed in the corresponding emotion folder **before using the app**.
-
-## Creator
-
-This project is created by - **Arnav Pundir**.
 
 ---
 
-Enjoy music that understands your mood! 🎧🧠
+## 📦 Installation
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/yourusername/EmotionMusicApp.git
+cd EmotionMusicApp
+```
+
+2. **Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+> If `requirements.txt` is not created, use:
+```bash
+pip install PyQt5 opencv-python pygame deepface
+```
+
+3. **Run the app**
+```bash
+python EmotionMusicGUI.py
+```
+
+---
+
+## 🎼 How to Add Songs
+
+- ✅ Click **"➕ Add Song to Category"** to browse and copy a song into the appropriate emotion folder.
+- 📂 Songs are stored in `songs/<emotion>/`.
+
+---
+
+## 🎯 Manual Emotion Selection
+
+- You can click **"🎯 Select Emotion Manually"** to skip webcam detection and directly choose your mood.
+- This instantly plays music for the selected emotion.
+
+---
+
+## 🧠 Emotion Categories Supported
+
+- Happy 🥳  
+- Sad ☹️  
+- Angry 🤬  
+- Surprise 😮  
+- Fear 😱  
+- Neutral 😒  
+
+---
+
+## ⚠️ Notes
+
+- Webcam required for automatic detection.
+- Emotion detection is done every 10 seconds to reduce overhead.
+- Make sure music files are `.mp3` or `.wav`.
+
+---
+
+## Developer
+
+- This is created by **Arnav Pundir**
