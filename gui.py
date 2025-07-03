@@ -25,11 +25,10 @@ class EmotionMusicGUI(QWidget):
         "surprise": "😮",
         "fear": "😱",
         "neutral": "😒",
-        "disgust": "🤫"
     }
 
     last_detection_time = 0
-    detection_interval = 10  # seconds
+    detection_interval = 5  # seconds
 
     def __init__(self):
         super().__init__()
